@@ -1,3 +1,6 @@
+# webpack4基本配置
+
+### 基本配置
 1. webpack 是一个模块打包器(module bundle)，在初期 webpack 只认识 js 模块，随着 webpack 不断发展他可以打包几乎任意模块（css,png,jpg....）
    > 默认情况下webpack只认识js模块
 2. js模块种类：ESmodule AMD CMD CommonJS
@@ -21,5 +24,17 @@
 5. webpack有个配置选项mode：设置打包模式 可选值 production（默认 --- js代码压缩）  development（js代码不压缩） 
 
 6. webpack不能识别非js模块，所以要借助loader帮忙
-    
 
+
+    
+<!-- <font face="黑体">我是黑体字</font>
+<font face="微软雅黑">我是微软雅黑</font>
+<font face="STCAIYUN">我是华文彩云</font>
+<font color=#0099ff size=12 face="黑体">黑体</font>
+<font color=#00ffff size=3>null</font>
+<font color=gray size=5>gray</font> -->
+<!-- | Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 | -->
