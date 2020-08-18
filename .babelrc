@@ -1,6 +1,22 @@
 {
-    "presets": [["@babel/preset-env", {
-        "useBuiltIns": "usage",
-        "corejs": 2
-    }]]
+    "presets": [
+        ["@babel/preset-env", {
+            "targets": {
+                "chrome": "67",
+                "ie": "11"
+            },
+            "useBuiltIns": "usage",
+            "corejs": 2
+        }],
+        // 注意插件顺序
+        "@babel/preset-react"
+    ],
+    // "plugins": [["@babel/plugin-transform-runtime", {
+    //     "absoluteRuntime": false,
+    //     "corejs": 2,
+    //     "helpers": true,
+    //     "regenerator": true,
+    //     "useESModules": false,
+    //     "version": "7.0.0-beta.0"
+    // }]]
 }

@@ -49,3 +49,28 @@
      })
    }
    ```
+
+   10. babel配置 
+      * babel-loader 链接webpack和babel的桥梁   
+      * @babel/preset-env: 帮我们转码（es6-es5）的核心。说白了，它就是一大堆babel plugin的集合。babel的一切转码功能都是靠插件完成的。当然，插件要发挥作  用，离不开babel本身的AST抽象能力。也就是babel为插件提供了AST能力，而插件利用该能力，创建/修改AST。
+         > 本身babel只能转义es6新语法，对于一些新的es6 api(for..of  map() set() promise() generator....等)无法转义
+      * @babel/polyfill 这个包是一个纯运行时的包，不是babel插件。它的作用是直接改写全局变量，从而让运行环境支持经过present-env转码后的代码(新的api)
+      @babel/polyfill引入了core-js和regenerator-runtime/runtime两个核心包
+
+      > **在我们设置preset-env的useBuiltIns为false（默认值）时，preset-env不会为我们自动引入polyfill，我们要手动引入@babel/polyfill，并会导致整个core-js和regenerator-runtime/runtime被打包进我们的项目。这时，如果用webpack打包，bundle文件的体积应该是最大的。**
+
+      > **useBuiltIns为entry时，我们手动引入@babel/polyfill，比false好的是，它不会把所有的core-js模块引入，而是只引入targets需要的。虽然引入的模块比直接引入@babel/polyfill少，但总体而言，它还是会引入很多模块。**
+
+      > **使用usage模式，preset-env会自动帮你插入需要的core-js模块，不需要你手动import任何代码。缺点是：babel默认不会检测第三方依赖包代码，知会看当前文件中需要哪些polyfill，所以使用 usage 时，可能会出现引入第三方的代码包未注入模块而引发bug。**
+
+      > ***缺点：直接改写全局变量,污染了全局变量***
+
+      总结：
+
+      写轮子用这种babel配置（不会污染全局变量）：babel-loader + @babel/runtime-corejs2（@babel/runtime-corejs3） + @babel/runtime + @babel/plugin-transform-runtime
+
+      写业务代码babel配置：babel-loader + @babel/preset-env + @babel/polyfill（特定情况下不需要手动引入，主要看@babel/preset-env的选项useBuiltIns的值情况而定）
+
+
+   11. tree-shaking
+
