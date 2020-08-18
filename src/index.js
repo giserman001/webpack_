@@ -1,12 +1,20 @@
-import './index.scss'
-// import './test.css'
-var root= document.getElementById('app')
+// require("@babel/polyfill");
+// import './index.scss'
+// import number from './number'
+// import counter from './counter'
 
-root.innerHTML = '<div class="iconfont iconshengdanhuoche"></div>'
+// counter()
+// number()
+// console.log(module, 'module')
+// if (module.hot) {
+//   module.hot.accept('./number', () => {
+//     const numbers = document.getElementById('number')
+//     numbers && document.body.removeChild(numbers)
+//     number()
+//   })
+// }
 
-import avatar from './images/avatar.jpg';
-
-var img = new Image();
-img.src = avatar;
-img.classList.add('avatar');
-root.append(img);
+const arr = [new Promise(() => {}), new Promise(() => {})]
+arr.map((item) => {
+  console.log(item)
+})
