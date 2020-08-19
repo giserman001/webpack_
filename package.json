@@ -1,14 +1,17 @@
 {
   "name": "webpack4",
+  "sideEffects": false,
   "version": "1.0.0",
   "description": "",
   "private": true,
+  "main": "dist/main.js",
   "scripts": {
-    "aly": "webpack --profile --json > compilation-stats.json",
-    "dev": "webpack",
-    "watch": "webpack --watch",
-    "start": "webpack-dev-server",
-    "server": "node server.js"
+    "aly": "webpack --config ./build/webpack.prod.js --profile --json > compilation-stats.json",
+    "dev-build": "webpack --config ./build/webpack.dev.js",
+    "watch": "webpack --config ./build/webpack.dev.js --watch",
+    "dev": "webpack-dev-server --config ./build/webpack.dev.js",
+    "build": "webpack --config ./build/webpack.prod.js",
+    "server": "node ./build/server.js"
   },
   "keywords": [],
   "author": "giserman001",
@@ -34,7 +37,8 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-dev-server": "^3.11.0",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack-hot-middleware": "^2.25.0",
+    "webpack-merge": "^5.1.2"
   },
   "browserslist": [
     "defaults",
@@ -48,6 +52,7 @@
     "@babel/polyfill": "^7.10.4",
     "@babel/runtime": "^7.11.2",
     "@babel/runtime-corejs2": "^7.11.2",
+    "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

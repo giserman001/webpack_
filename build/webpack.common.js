@@ -1,29 +1,14 @@
-const webpack = require('webpack')
-const path = require('path')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-
+const path = require('path')
 module.exports = {
-  mode: 'development',
-  // 开发环境最佳实践：cheap-module-eval-source-map  生产环境最佳实践：cheap-module-source-map
-  devtool: 'cheap-module-eval-source-map', // none/source-map
   entry: {
     main: ['./src/index.js'],
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../dist'),
     publicPath: '/', // 根路径
-  },
-  devServer: {
-    contentBase: './dist',
-    open: true,
-    port: 8090,
-    hot: true, // 开启HMR(Hot Module Replacement) 热更新  需要配合webpack自带插件：new webpack.HotModuleReplacementPlugin()
-    hotOnly: true, // 即便hmr失效，也不让浏览器自动刷新
-    proxy: {
-      '/api': 'http://localhost:3000',
-    },
   },
   module: {
     rules: [
@@ -82,13 +67,37 @@ module.exports = {
   },
   // plugins 在webpack运行到某一个时刻，会帮你做一些事情  ----生命周期有点像
   plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, '../index.html'), // 这里写 './index.html' 也是可以的 不知道为什么
+      title: 'webpack学习',
+    }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
     }),
-    new HtmlWebpackPlugin({
-      template: './index.html',
-      title: 'webpack学习',
-    }),
-    new webpack.HotModuleReplacementPlugin(),
   ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial
+      minSize: 30000, // 模块大于30kb我才会代码分割
+      // maxSize: 50000, // 二次分割 lodash 本身1mb  他会分割成两个50kb的lodash
+      minChunks: 1, // 同一个模块被引用次数
+      maxAsyncRequests: 5, // 一个模块同时加载的其他模块数
+      maxInitialRequests: 3, // 入口文件加载的数量
+      automaticNameDelimiter: '~', // 文件名连接符
+      automaticNameMaxLength: 30,
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          // filename: 'vendors.js' //注意这里chunks: 'initial'|| 'all' 时 才可以设置filename
+        },
+        default: {
+          priority: -20,
+          reuseExistingChunk: true, // 模块互相引用，可能会重复打包，这个配置就是如果打包过了  就不会再打包了
+          filename: 'common.js'
+        }
+      },
+    },
+  },
 }

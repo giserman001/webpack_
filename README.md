@@ -72,5 +72,28 @@
       写业务代码babel配置：babel-loader + @babel/preset-env + @babel/polyfill（特定情况下不需要手动引入，主要看@babel/preset-env的选项useBuiltIns的值情况而定）
 
 
-   11. tree-shaking
+   11. tree-shaking（注意：只支持esModule模块）  去除无用代码   optimization
+      > 注意tree-shaking使用时，对于有的模块没有导出内容  只是简单地import  （列如：import '@babel/polyfill',他只是在window上挂载全局的变量和属性。），那样的话，他也会被tree-shaking了,那么如何避免呢，我们只要在package.json文件里添加s属性 "sideEffects": ["@babel/polyfill", "*.css", ....]
 
+      mode: production环境 js已被压缩，开启了tree-shaking 
+      mode: development环境 js未被压缩，未开启tree-shaking 
+
+   12. webpack 不同环境配置  webpack-merge   webpack.common.js/webpack.dev.js/webpack.prod.js
+
+   13. code-splitting  
+      + lodash 挂载全局window下面   ， 并且在webpack里单独打包一个lodash.js文件
+         ```js
+         import _ from 'lodash'
+
+         window._ = _
+         ```
+         webpack里面
+         ```js
+         entry: {
+            lodash: './src/lodash.js',
+            main: ['./src/index.js']
+         }
+         ```
+
+         webpack 在做代码分割时对于引入第三方模块：同步引入（vender-main.js）和异步引入(0.js)分别打包到不同文件里面  业务代码回打包在自己定义的output（main.js）文件里面
+         optimization - splitChunks 里面详细配置
