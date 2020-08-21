@@ -2,6 +2,7 @@
 // var element = document.createElement('div')
 // element.innerHTML = _.join(['dell', 'lee'], '_')
 // document.body.appendChild(element)
+console.log(process.env.NODE_ENV)
 
 function getComponent() {
   // 异步加载lodash.js-----可以实现懒加载

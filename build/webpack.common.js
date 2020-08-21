@@ -1,6 +1,7 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const path = require('path')
+console.log(process.env.NODE_ENV, 'process.env.NODE_ENV测试啊啊啊啊啊啊啊啊啊啊啊啊啊啊')
 module.exports = {
   entry: {
     main: ['./src/index.js'],
@@ -73,11 +74,11 @@ module.exports = {
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
-    }),
+    })
   ],
   optimization: {
     splitChunks: {
-      chunks: 'all', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial
+      chunks: 'all', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial  默认值：async
       minSize: 30000, // 模块大于30kb我才会代码分割
       // maxSize: 50000, // 二次分割 lodash 本身1mb  他会分割成两个50kb的lodash
       minChunks: 1, // 同一个模块被引用次数

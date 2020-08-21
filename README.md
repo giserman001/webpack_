@@ -79,6 +79,9 @@
       mode: development环境 js未被压缩，未开启tree-shaking 
 
    12. webpack 不同环境配置  webpack-merge   webpack.common.js/webpack.dev.js/webpack.prod.js
+      webpack3 中一般会手动设置 DefinePlugin，但是 webpack4 自动帮你设置该插件
+      + cross-env 这个模块可以区分环境
+      + --mode 环境名字 也可以区分环境 
 
    13. code-splitting  
       + lodash 挂载全局window下面   ， 并且在webpack里单独打包一个lodash.js文件
@@ -97,3 +100,11 @@
 
          webpack 在做代码分割时对于引入第三方模块：同步引入（vender-main.js）和异步引入(0.js)分别打包到不同文件里面  业务代码回打包在自己定义的output（main.js）文件里面
          optimization - splitChunks 里面详细配置
+
+         lazy-loading(懒加载--按需加载)两种方式 : import(/* webpackChunkName:"lodash" */ 'lodash')  webpack中的require.ensure()  
+
+         对于chunks理解：不能理解打包前的一个一个模块，它是打包后生成每一个文件就对应一个chunk
+
+
+   14. 打包分析 preload prefetch   
+      生成打包分析文件：  webpack --config ./build/webpack.prod.js --profile --json > compilation-stats.json
