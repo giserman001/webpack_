@@ -8,8 +8,9 @@ module.exports = {
     // entry: './src/entry.js'
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].[hash].js',
     path: path.resolve(__dirname, '../dist'),
+    chunkFilename: '[name].chunk.[hash].js',
     publicPath: './', // 根路径
   },
   module: {
@@ -37,26 +38,6 @@ module.exports = {
         },
       },
       {
-        test: /\.scss$/,
-        // 注意loader执行顺序  从下往上  从右往左
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 0, // 让import css 也会走'sass-loader'和'postcss-loader'
-              // modules: true
-            },
-          },
-          'postcss-loader', // 添加css前缀 -webkit- -moz- ...等  一定要注意顺序
-          'sass-loader',
-        ],
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader'],
-      },
-      {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
@@ -78,27 +59,28 @@ module.exports = {
     })
   ],
   optimization: {
+    usedExports: true, //导入的模块被使用了，我们才会被打包进去
     splitChunks: {
-      chunks: 'initial', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial  默认值：async
-      minSize: 30000, // 模块大于30kb我才会代码分割
-      // maxSize: 50000, // 二次分割 lodash 本身1mb  他会分割成两个50kb的lodash
-      minChunks: 1, // 同一个模块被引用次数
-      maxAsyncRequests: 5, // 一个模块同时加载的其他模块数
-      maxInitialRequests: 3, // 入口文件加载的数量
-      automaticNameDelimiter: '~', // 文件名连接符
-      automaticNameMaxLength: 30,
-      name: true,
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          priority: -10
-        },
-        default: {
-          minChunks: 2,
-          priority: -20,
-          reuseExistingChunk: true
-        }
-      },
+      chunks: 'all', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial  默认值：async
+      // minSize: 30000, // 模块大于30kb我才会代码分割
+      // // maxSize: 50000, // 二次分割 lodash 本身1mb  他会分割成两个50kb的lodash
+      // minChunks: 1, // 同一个模块被引用次数
+      // maxAsyncRequests: 5, // 一个模块同时加载的其他模块数
+      // maxInitialRequests: 3, // 入口文件加载的数量
+      // automaticNameDelimiter: '~', // 文件名连接符
+      // automaticNameMaxLength: 30,
+      // name: true,
+      // cacheGroups: {
+      //   vendors: {
+      //     test: /[\\/]node_modules[\\/]/,
+      //     priority: -10
+      //   },
+      //   default: {
+      //     minChunks: 2,
+      //     priority: -20,
+      //     reuseExistingChunk: true
+      //   }
+      // },
     },
-  },
+  }
 }

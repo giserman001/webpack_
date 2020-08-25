@@ -1,6 +1,9 @@
 {
   "name": "webpack4",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -8,7 +11,7 @@
   "scripts": {
     "aly": "webpack --config ./build/webpack.prod.js --profile --json > compilation-stats.json",
     "analyze": "cross-env NODE_ENV=analyze webpack --config ./build/webpack.prod.js --mode production",
-    "dev-build": "webpack --config ./build/webpack.dev.js --mode production",
+    "dev-build": "webpack --config ./build/webpack.dev.js",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config ./build/webpack.dev.js --mode development",
     "build": "cross-env NODE_ENV=production webpack --config ./build/webpack.prod.js --mode production",
     "server": "node ./build/server.js"
@@ -29,7 +32,9 @@
     "express": "^4.17.1",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.10.0",
     "node-sass": "^4.14.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^9.0.3",
     "style-loader": "^1.2.1",

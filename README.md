@@ -97,6 +97,22 @@
             main: ['./src/index.js']
          }
          ```
+         ```js
+         async function getComponent() {
+            // 异步加载lodash.js-----可以实现懒加载
+            const { default: _ } = await import(/* webpackChunkName:"lodash" */ 'lodash')
+            console.log(_, 'element')
+            var element = document.createElement('div')
+            element.innerHTML = _.join(['dell', 'lee'], '_')
+            return element
+         }
+         document.addEventListener('click', () => {
+            getComponent().then((element) => {
+               document.body.appendChild(element)
+            })
+         })
+
+         ```
 
          webpack 在做代码分割时对于引入第三方模块：同步引入（vender-main.js）和异步引入(0.js)分别打包到不同文件里面  业务代码回打包在自己定义的output（main.js）文件里面
          optimization - splitChunks 里面详细配置
@@ -108,3 +124,147 @@
 
    14. 打包分析 preload prefetch   
       生成打包分析文件：  webpack --config ./build/webpack.prod.js --profile --json > compilation-stats.json
+      npm: webpack-bundle-analyzer
+      其实还有其他方法，webpack官网有说明
+
+      /* webpackPrefetch: true */ 主要文件加载完成之后，带宽空闲时加载代码----预取
+      /* webpackPreload: true */ 在当前导航期间可能需要资源 ---- 预加载
+      ```js
+      import(/* webpackPrefetch: true */ './click').then(({default: func}) => {
+         func()
+      })
+      import(/* webpackPreload: true */ 'ChartingLibrary');
+      ```
+
+
+      webpack在development，开发环境下的默认配置
+      ```js
+      module.exports = {
+         //开发环境下默认启用cache，在内存中对已经构建的部分进行缓存
+         //避免其他模块修改，但是该模块未修改时候，重新构建，能够更快的进行增量构建
+         //属于空间换时间的做法
+         cache: true, 
+         output: {
+            pathinfo: true //输入代码添加额外的路径注释，提高代码可读性
+         },
+         devtools: "eval", //sourceMap为eval类型
+         plugins: [
+            //默认添加NODE_ENV为development
+            new webpack.DefinePlugin({ "process.env.NODE_ENV": JSON.stringify("development") }),
+         ],
+         optimization: {
+            namedModules: true, //取代插件中的 new webpack.NamedModulesPlugin()
+            namedChunks: true
+         }
+      }
+      ```
+
+      production，生产环境下的默认配置
+      ```js
+      module.exports = {
+         performance: {
+            hints: 'warning',
+            maxAssetSize: 250000, //单文件超过250k，命令行告警
+            maxEntrypointSize: 250000, //首次加载文件总和超过250k，命令行告警
+         }
+         plugins: [
+            //默认添加NODE_ENV为production
+            new webpack.DefinePlugin({ "process.env.NODE_ENV": JSON.stringify("production") })
+         ],
+         optimization: {
+            minimize: true, //取代 new UglifyJsPlugin(/* ... */)
+            providedExports: true,
+            usedExports: true,
+            //识别package.json中的sideEffects以剔除无用的模块，用来做tree-shake
+            //依赖于optimization.providedExports和optimization.usedExports
+            sideEffects: true,
+            //取代 new webpack.optimize.ModuleConcatenationPlugin()
+            concatenateModules: true,
+            //取代 new webpack.NoEmitOnErrorsPlugin()，编译错误时不打印输出资源。
+            noEmitOnErrors: true
+         }
+      }
+      ```
+
+      webpack 公共默认配置
+      ```js
+      module.exports = {
+         context: process.cwd()
+         entry: './src',
+         output: {
+            path: 'dist',
+            filename: '[name].js'
+         },
+         rules: [
+            {
+               type: "javascript/auto",
+               resolve: {}
+            },
+            {
+               test: /\.mjs$/i,
+               type: "javascript/esm",
+               resolve: {
+               mainFields:
+               options.target === "web" ||
+               options.target === "webworker" ||
+               options.target === "electron-renderer"
+                  ? ["browser", "main"]
+                  : ["main"]
+               }
+            },
+            {
+               test: /\.json$/i,
+               type: "json"
+            },
+            {
+               test: /\.wasm$/i,
+               type: "webassembly/experimental"
+            }
+         ]
+      }
+      ```
+15. css代码分离 压缩
+   MiniCssExtractPlugin： 从js文件中分离
+   OptimizeCSSAssetsPlugin： css压缩
+   注意点： 在mode: production环境下，默认开启了tree-shaking  那么有可能多import './index.css' 直接干掉（删除）
+   此时你需要在package.json中配合 sideEffects字段 做文件过滤
+
+   高级用法
+   + 可以使用optimize . splitchunks . cachegroups将CSS提取到一个CSS文件中
+   ```json
+      optimization: {
+    splitChunks: {
+      cacheGroups: {
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
+  },
+   ```
+   + 基于webpack 入口提取CSS：您还可以根据webpack入口的名称提取CSS。如果动态导入路由，但又想根据条目绑定CSS，那么这一点特别有用。这还可以防止使用ExtractTextPlugin时出现的CSS重复问题。
+   ```json
+   optimization: {
+    splitChunks: {
+      cacheGroups: {
+        fooStyles: {
+          name: 'foo',
+          test: (m, c, entry = 'foo') =>
+            m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+          chunks: 'all',
+          enforce: true,
+        },
+        barStyles: {
+          name: 'bar',
+          test: (m, c, entry = 'bar') =>
+            m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
+  },
+   ```
