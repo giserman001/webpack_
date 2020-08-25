@@ -5,6 +5,7 @@ console.log(process.env.NODE_ENV, 'process.env.NODE_ENV测试啊啊啊啊啊啊�
 module.exports = {
   entry: {
     main: ['./src/index.js'],
+    // entry: './src/entry.js'
   },
   output: {
     filename: '[name].js',
@@ -78,7 +79,7 @@ module.exports = {
   ],
   optimization: {
     splitChunks: {
-      chunks: 'all', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial  默认值：async
+      chunks: 'initial', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial  默认值：async
       minSize: 30000, // 模块大于30kb我才会代码分割
       // maxSize: 50000, // 二次分割 lodash 本身1mb  他会分割成两个50kb的lodash
       minChunks: 1, // 同一个模块被引用次数
@@ -90,13 +91,12 @@ module.exports = {
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
-          priority: -10,
-          // filename: 'vendors.js' //注意这里chunks: 'initial'|| 'all' 时 才可以设置filename
+          priority: -10
         },
         default: {
+          minChunks: 2,
           priority: -20,
-          reuseExistingChunk: true, // 模块互相引用，可能会重复打包，这个配置就是如果打包过了  就不会再打包了
-          filename: 'common.js'
+          reuseExistingChunk: true
         }
       },
     },
