@@ -1,8 +1,4 @@
 const webpack = require('webpack')
-const {
-  merge
-} = require('webpack-merge')
-const commonConfig = require('./webpack.common.js')
 const devConfig = {
   mode: 'development',
   // 开发环境最佳实践：cheap-module-eval-source-map  生产环境最佳实践：cheap-module-source-map
@@ -43,7 +39,11 @@ const devConfig = {
   // plugins 在webpack运行到某一个时刻，会帮你做一些事情  ----生命周期有点像
   plugins: [
     new webpack.HotModuleReplacementPlugin()
-  ]
+  ],
+  output: {
+    filename: '[name].js',
+    chunkFilename: '[name].chunk.js'
+  }
 }
 
-module.exports = merge(commonConfig, devConfig)
+module.exports = devConfig

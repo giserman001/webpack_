@@ -83,6 +83,15 @@
       + cross-env 这个模块可以区分环境
       + --mode 环境名字 也可以区分环境 
 
+      ```js
+      // 注入业务中区分环境 配合 cross-env这个模块使用
+      new Webpack.DefinePlugin({
+         'process.env': {
+            APP_ENV:JSON.stringify(process.env.NODE_ENV)
+         },
+      }),
+      ```
+
    13. code-splitting  
       + lodash 挂载全局window下面   ， 并且在webpack里单独打包一个lodash.js文件
          ```js
@@ -228,22 +237,26 @@
    OptimizeCSSAssetsPlugin： css压缩
    注意点： 在mode: production环境下，默认开启了tree-shaking  那么有可能多import './index.css' 直接干掉（删除）
    此时你需要在package.json中配合 sideEffects字段 做文件过滤
+   如： "sideEffects": [
+            "*.css",
+            "*.scss"
+         ],
 
    高级用法
    + 可以使用optimize . splitchunks . cachegroups将CSS提取到一个CSS文件中
    ```json
       optimization: {
-    splitChunks: {
-      cacheGroups: {
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true,
-        },
+         splitChunks: {
+            cacheGroups: {
+            styles: {
+               name: 'styles',
+               test: /\.css$/,
+               chunks: 'all',
+               enforce: true,
+            },
+            },
+         },
       },
-    },
-  },
    ```
    + 基于webpack 入口提取CSS：您还可以根据webpack入口的名称提取CSS。如果动态导入路由，但又想根据条目绑定CSS，那么这一点特别有用。这还可以防止使用ExtractTextPlugin时出现的CSS重复问题。
    ```json
@@ -268,3 +281,30 @@
     },
   },
    ```
+
+   16. webpack 与浏览器缓存（Caching）
+
+   我们可以通过hash来防止浏览器缓存： contenthash
+   内容变化的chunk在contenthash变化  若文件没有变化 那么contenthash不会变化
+   那么contenthash与hash有啥区别呢
+   output: {
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].chunk.[contenthash].js',
+  }
+
+  runtimeChunk:优化持久化缓存的, runtime 指的是 webpack 的运行环境(具体作用就是模块解析, 加载) 和 模块信息清单, 模块信息清单在每次有模块变更(hash 变更)时都会变更, 所以我们想把这部分代码单独打包出来, 配合后端缓存策略, 这样就不会因为某个模块的变更导致包含模块信息的模块 (通常会被包含在最后一个 bundle 中)缓存失效. optimization.runtimeChunk 就是告诉 webpack 是否要把这部分单独打包出来.
+
+  runtime：包含：在模块交互时，连接模块所需的加载和解析逻辑。包括浏览器中的已加载模块的连接，以及懒加载模块的执行逻辑。
+  Manifest：那么，一旦你的应用程序中，形如 index.html 文件、一些 bundle 和各种资源加载到浏览器中，会发生什么？你精心安排的 /src 目录的文件结构现在已经不存在，所以 webpack 如何管理所有模块之间的交互呢？这就是 manifest 数据用途的由来……
+
+  17. shimming 打包兼容处理----垫片----
+   + @babel/polyfill 主要为了兼容低版本浏览器
+   + // 当我发现有个模块用了$字符串，那么回自动引入jquery这个库
+      new webpack.ProvidePlugin({
+      $: 'jquery',
+      _: 'lodash', // 引用整个lodash
+      _join: ['lodash', 'join'] // 只引用lodash里面的join方法
+      })
+
+   + 在模块里打印this一般表示当前模块自身对象，并不指向window  （没有配置出来，没找到错误原因）
+      需要借助一个loader实现this指向window npm: imports-loader

@@ -1,6 +1,5 @@
-const { merge } = require('webpack-merge')
+
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const commonConfig = require('./webpack.common.js')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 分离css 不支持HMR
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'); // css 压缩
 
@@ -44,7 +43,11 @@ if(process.env.NODE_ENV === 'analyze'){
   optimization: {
     minimizer: [new OptimizeCSSAssetsPlugin({})],
   },
-  plugins
+  plugins,
+  output: {
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].chunk.[contenthash].js',
+  }
 }
 
-module.exports = merge(commonConfig, prodConfig)
+module.exports = prodConfig

@@ -1,17 +1,20 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
+const { merge } = require('webpack-merge')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const path = require('path')
-console.log(process.env.NODE_ENV, 'process.env.NODE_ENV测试啊啊啊啊啊啊啊啊啊啊啊啊啊啊')
-module.exports = {
+const devConfig = require('./webpack.dev')
+const prodConfig = require('./webpack.prod')
+console.log(process.env.NODE_ENV, 'NODE_ENV', merge)
+
+const commonConfig = {
+  performance: false, // 移除警告
   entry: {
     main: ['./src/index.js'],
-    // entry: './src/entry.js'
   },
   output: {
-    filename: '[name].[hash].js',
     path: path.resolve(__dirname, '../dist'),
-    chunkFilename: '[name].chunk.[hash].js',
-    publicPath: './', // 根路径
+    // publicPath: './', // 根路径
   },
   module: {
     rules: [
@@ -40,7 +43,12 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+        ],
+
         // 这里的配置跟我在.babelrc文件配置是一样的
         // options: {
         //   presets: ["@babel/preset-env"]
@@ -56,9 +64,19 @@ module.exports = {
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
-    })
+    }),
+    // 当我发现有个模块用了$字符串，那么回自动引入jquery这个库
+    // 不局限于第三方库，自定义库也可以实现，切记
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      _: 'lodash', // 引用整个lodash
+      _join: ['lodash', 'join'], // 只引用lodash里面的join方法
+    }),
   ],
   optimization: {
+    runtimeChunk: {
+      name: 'runtime', // manifest
+    },
     usedExports: true, //导入的模块被使用了，我们才会被打包进去
     splitChunks: {
       chunks: 'all', // 表示是对那些chunks实行代码分割 可能值有：all，async和initial  默认值：async
@@ -82,5 +100,13 @@ module.exports = {
       //   }
       // },
     },
+  },
+}
+
+module.exports = (env) => {
+  if (env && env.production) {
+    return merge(commonConfig, prodConfig)
+  } else {
+    return merge(commonConfig, devConfig)
   }
 }

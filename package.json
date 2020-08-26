@@ -9,12 +9,12 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "aly": "webpack --config ./build/webpack.prod.js --profile --json > compilation-stats.json",
-    "analyze": "cross-env NODE_ENV=analyze webpack --config ./build/webpack.prod.js --mode production",
-    "dev-build": "webpack --config ./build/webpack.dev.js",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --config ./build/webpack.dev.js --mode development",
-    "build": "cross-env NODE_ENV=production webpack --config ./build/webpack.prod.js --mode production",
-    "server": "node ./build/server.js"
+    "aly": "webpack --env.production --config ./build/webpack.common.js --profile --json > compilation-stats.json",
+    "analyze": "cross-env NODE_ENV=analyze webpack --env.production --config ./build/webpack.common.js",
+    "server": "node ./build/server.js",
+    "dev-build": "cross-env NODE_ENV=development webpack --config ./build/webpack.common.js",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config ./build/webpack.common.js",
+    "build": "cross-env NODE_ENV=production webpack --env.production --config ./build/webpack.common.js"
   },
   "keywords": [],
   "author": "giserman001",
@@ -59,6 +59,8 @@
     "@babel/polyfill": "^7.10.4",
     "@babel/runtime": "^7.11.2",
     "@babel/runtime-corejs2": "^7.11.2",
+    "imports-loader": "^1.1.0",
+    "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
