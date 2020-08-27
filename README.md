@@ -308,3 +308,27 @@
 
    + 在模块里打印this一般表示当前模块自身对象，并不指向window  （没有配置出来，没找到错误原因）
       需要借助一个loader实现this指向window npm: imports-loader
+
+18. library的打包
+
+   别人使用你的库时，可能引入的方式各不相同 
+   如：esModules: import library from 'library'  
+      commonjs: const library =  require('library')
+      AMD: define(['library'], function() {})
+      CMD: define(function(require, exports, module) {
+               var library = require('require')
+           })
+
+      webpack配置时：
+      output: {
+         path: path.resolve(__dirname, './dist'),
+         filename: 'library.js',
+         library: 'library', // 支持script方式引入库，并且通过全局变量library访问
+         libraryTarget: 'umd' // 对所有引入的方式都兼容(除了script引入方式)
+      },
+      output: {
+         path: path.resolve(__dirname, './dist'),
+         filename: 'library.js',
+         library: 'library', // 支持script方式引入库，并且通过全局变量library访问
+         libraryTarget: 'this' // 允许值：window/this/global/umd 把library全局变量挂载在this(window对象)上
+      },
