@@ -332,3 +332,11 @@
          library: 'library', // 支持script方式引入库，并且通过全局变量library访问
          libraryTarget: 'this' // 允许值：window/this/global/umd 把library全局变量挂载在this(window对象)上
       },
+      // 
+      externals: ['lodash'] // 忽略这个包，不打包了
+      externals: {
+        lodash: {
+            commonjs: 'lodash'， // commonjs规范引入lodash时，那么引入的名字必须是lodash
+            root: '_' // script标签引入时 全局变量是: _
+        }
+    }, 
